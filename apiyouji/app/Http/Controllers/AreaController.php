@@ -23,8 +23,8 @@ class AreaController extends Controller
                 $area = DB::table('tb_kota')->where('kode',$param['kode'])->first();
                 // cek kode di area kota
                 if(empty($area)){
-                    // jika kosong maka kode di cari di area kecamatan
-                    $data = DB::table('tb_kecamatan')->where('kode',$param['kode'])->get();
+//                    // jika kosong
+                    $data = [];
                 }else{
                     $data = DB::table('tb_kecamatan')->where('kode_kota',$area->id)->whereNull('deleted_at')->get();
                 }

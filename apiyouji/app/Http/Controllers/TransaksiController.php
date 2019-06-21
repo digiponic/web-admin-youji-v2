@@ -103,7 +103,7 @@ class TransaksiController extends Controller
         $penjualan_detil = $param['penjualan_detil'];
         
         $count = count($penjualan_detil);
-        for ($i=0; $i < $count; $i++) { 
+        for ($i=0; $i < $count; $i++) {
             $penjualan_detil[$i]['id_penjualan'] = $transaksi;
             $penjualan_detil[$i]['kode_penjualan'] = $kode;
             $penjualan_detil[$i]['satuan'] = DB::table('tb_general')->where('keterangan',$penjualan_detil[$i]['satuan'])->value('id');
