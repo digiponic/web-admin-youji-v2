@@ -1,7 +1,7 @@
 <?php namespace App\Http\Controllers;
 
-	use Session;
-	use Request;
+	use Illuminate\Http\Request;
+	use Session;	
 	use DB;
 	use CRUDBooster;
 
@@ -147,7 +147,7 @@
 	        |
 	        */
 	        $this->index_button = array();
-
+			$this->index_button[] = ['label'=>'Produksi Stok Jual','url'=>CRUDBooster::mainpath("produksi"),"icon"=>"fa fa-fw fa-industry",'color'=>'danger'];
 
 
 	        /*
@@ -216,6 +216,8 @@
 	        |
 	        */
 	        $this->load_js = array();
+	        $this->load_js[] = asset("vendor/crudbooster/assets/select2/dist/js/select2.min.js");
+	        $this->load_js[] = asset("js/produksi.js");
 
 
 
@@ -240,6 +242,8 @@
 	        |
 	        */
 	        $this->load_css = array();
+	        $this->load_css[] = asset("vendor/crudbooster/assets/select2/dist/css/select2.min.css");
+	        $this->load_css[] = asset("css/produksi.css");
 
 
 	    }
@@ -373,9 +377,55 @@
 			DB::table('tb_produk')->where('id', $id)->update(['deleted_user' => CRUDBooster::myName()]);
 	    }
 
+		//By the way, you can still create your own method in here... :)
+		
+		public function getProduksi()
+		{
+			$data = [];
+			$data['url'] = CRUDBooster::apiPath();
+			$data['page_title'] = 'Produksi Stok Jual';
+			$data['produk'] = DB::table('tb_produk')->whereNull('deleted_at')->get();
 
+			//Please use cbView method instead view method from laravel
+			$this->cbView('produksi_add', $data);
+		}
 
-	    //By the way, you can still create your own method in here... :)
+		public function postAddProduksi(Request $request)
+		{
+			$form = $request->all();
+			// dd($form);
+
+			$prd = CRUDBooster::first('tb_produk', $form['produk']);
+			$jumlah = $prd->stok_jual + $form['jumlah'];
+
+			DB::table('tb_produk')->where('id', $form['produk'])->update([
+				'stok_jual'		=> $jumlah,
+				'stok_bahan'	=> $form['sisa_bahan'],
+			]);
+
+			DB::table('tb_produk_stok_bahan')->insert([
+				'kode_produk'	=> $form['produk'],
+				'tanggal'		=> date('Y-m-d H:i:s'),
+				'stok_masuk'	=> 0,
+				'stok_keluar'	=> $form['jumlah_bahan'],
+				'keterangan'	=> 'Pengurangan stok untuk produksi '.$form['jumlah'].' @'.$form['satuan_jual'],
+				'created_user'	=> CRUDBooster::myName()
+			]);
+
+			DB::table('tb_produk_stok_jual')->insert([
+				'kode_produk'	=> $form['produk'],
+				'tanggal'		=> date('Y-m-d H:i:s'),
+				'stok_masuk'	=> $form['jumlah'],
+				'stok_keluar'	=> 0,
+				'keterangan'	=> 'Penambahan stok dari produksi '.$form['jumlah_bahan'].' '.$form['satuan_bahan'],
+				'created_user'	=> CRUDBooster::myName()
+			]);
+
+			$message = 'Produksi stok jual berhasil';
+			$type = 'primary';
+			CRUDBooster::redirectBack($message, $type);
+
+		}
 
 
 	}
