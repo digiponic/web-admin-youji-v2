@@ -10,22 +10,24 @@ use App\CustomerAddress;
 class Customer extends Model
 {
     use SoftDeletes;
-    protected $table = 'mst_customers';
+    protected $table = 'tb_customer';
     protected $appends = ['address'];
-    protected $fillable = ['code','name', 'desc','email','phone','created_user','update_user','deleted_user'];
-    protected $hidden = ['created_user','updated_user','deleted_user','created_at','updated_at','deleted_at'];    
+    protected $fillable = ['name', 'email', 'phone', 'kodepos'];
+    protected $hidden = ['created_at', 'updated_at', 'deleted_at'];
 
     public function CustomerAddress()
     {
         return $this->hasMany('App\CustomerAddress');
     }
+
     public function SalesOrders()
     {
         return $this->hasMany('App\SalesOrders');
     }
+
     public function getAddressAttribute()
     {
-        $address = CustomerAddress::where('customer_id', $this->id)->get(['id','customer_id','type','state','city','district','postcode','desc']);
+        $address = CustomerAddress::where('id_customer', $this->id)->get();
         return $address;
     }
 

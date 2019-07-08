@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Generals extends Model
 {
     use SoftDeletes;
-    protected $table = 'mst_generals';
-    protected $fillable = ['code','name','desc','type','created_user','updated_user','deleted_user'];
-    protected $hidden = ['created_user','updated_user','deleted_user','created_at','updated_at','deleted_at'];    
+    protected $table = 'tb_general';
+    protected $fillable = ['kode', 'kode_tipe', 'keterangan', 'gambar'];
+    protected $hidden = ['created_at', 'updated_at', 'deleted_at'];
 }
