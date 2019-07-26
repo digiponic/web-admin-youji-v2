@@ -12,16 +12,15 @@
 */
 
 $router->get('/', function () use ($router) {
-    // return $router->app->version();
     return 'REST API Digiponic Mobile Apps for Galaksi Organik v0.1';
 });
 
-// daftar area
+// area routing
 $router->group(['prefix' => 'area'], function () use ($router) {
     $router->post('/', 'AreaController@data');
 });
 
-//routing customer
+// customer routing
 $router->group(['prefix' => 'customer'], function () use ($router) {
     $router->get('/', 'CustomerController@all');
     $router->get('/show/{email}', 'CustomerController@show');
@@ -31,7 +30,7 @@ $router->group(['prefix' => 'customer'], function () use ($router) {
     $router->delete('/delete/{id}', 'CustomerController@delete');
 });
 
-//routing customeraddress
+// customer address routing
 $router->group(['prefix' => 'customeraddress'], function () use ($router) {
     $router->get('/', 'CustomerAddressController@all');
     $router->get('/show/{customerId}', 'CustomerAddressController@show');
@@ -42,7 +41,7 @@ $router->group(['prefix' => 'customeraddress'], function () use ($router) {
     $router->get('/default/{customerId}/{addressId}', 'CustomerAddressController@makeDefault');
 });
 
-//routing Generals
+// Generals routing
 $router->group(['prefix' => 'generals'], function () use ($router) {
     $router->get('/', 'GeneralsController@all');
     $router->get('/show/{id}', 'GeneralsController@show');
@@ -55,18 +54,19 @@ $router->group(['prefix' => 'generals'], function () use ($router) {
     $router->get('/slider', 'GeneralsController@getSlider');
 });
 
+// transaksi routing
 $router->group(['prefix' => 'transaksi'], function () use ($router) {
     $router->post('/', 'TransaksiController@simpan');
     $router->post('/data', 'TransaksiController@data');
     $router->post('/data/detil', 'TransaksiController@detil');
 });
 
+// produk routing
 $router->group(['prefix' => 'produk'], function () use ($router) {
     $router->get('/', 'ProdukController@data');
     $router->post('/filter', 'ProdukController@filter');
 });
 // ======================== Old route
-
 // routing product
 $router->group(['prefix' => 'product'], function () use ($router) {
     $router->get('/', 'ProductController@all');
@@ -78,6 +78,7 @@ $router->group(['prefix' => 'product'], function () use ($router) {
     $router->get('/stockcard/{id}', 'ProductController@stockcard');
 
 });
+
 $router->group(['prefix' => 'tipe'], function () use ($router) {
     $router->get('/', 'TipeController@data');
     $router->get('/detil/{keterangan}', 'TipeController@detil');
