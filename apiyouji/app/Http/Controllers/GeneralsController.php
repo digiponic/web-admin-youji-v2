@@ -85,7 +85,9 @@ class GeneralsController extends Controller
         $data = DB::table('cms_settings')
             ->select('content', 'helper')
             ->where('name', 'minimal_belanja')->first();
-        return response()->json(['error' => false, 'msg' => 'Nominal Minimal Belanja', 'data' => (array)$data], 200);
+        // return response()->json(['error' => false, 'msg' => 'Nominal Minimal Belanja', 'data' => (array)$data], 200);
+        $data->content = (int)$data->content;
+        return response()->json($data);
     }
 
     public function cekOngkir($kodeKecamatan)
@@ -100,23 +102,37 @@ class GeneralsController extends Controller
             $data2 = (array)$data2;
             $result = [];
             $result['harga_ongkos'] = $data2['content'];
-            return response()->json(['error' => false, 'msg' => 'Nominal Ongkos Kirim', 'data' => $result], 200);
+            return response()->json($result, 200);
         }
-        return response()->json(['error' => false, 'msg' => 'Nominal Ongkos Kirim', 'data' => (array)$data], 200);
+        return response()->json((array)$data, 200);
     }
 
     public function getSlider()
     {
+        // $data = DB::table('tb_slider')
+        //     ->select('keterangan', 'gambar')
+        //     ->where('status', 1)
+        //     ->orderBy('created_at', 'desc')
+        //     ->limit(5)
+        //     ->get();
+
+        // foreach ($data as $value) {
+        //     $value->gambar = url('../../public/'.$value->gambar);
+        // }       
+        
+        $path = DB::table('cms_settings')->where('name','cabang')->value('content');
+        $path = 'http://'.$_SERVER['SERVER_NAME'].'/'.strtolower($path).'/storage/app/';
+        
         $data = DB::table('tb_slider')
-            ->select('keterangan', 'gambar')
-            ->where('status', 1)
-            ->orderBy('created_at', 'desc')
-            ->limit(5)
-            ->get();
+                    ->whereNull('deleted_at')
+                    ->where('status', 1)
+                    ->select('keterangan', 'gambar')
+                    ->get();
 
         foreach ($data as $value) {
-            $value->gambar = url('../../public/'.$value->gambar);
+            $value->gambar = $path.$value->gambar;
         }
+        
         return response()->json($data, 200);
     }
 }
