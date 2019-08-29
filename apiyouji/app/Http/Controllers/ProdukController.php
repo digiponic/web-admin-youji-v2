@@ -20,7 +20,7 @@ class ProdukController extends Controller
                     // ->join('tb_general as cb', 'pd.cabang','=','cb.id')
                     ->join('tb_general as kt', 'pd.kategori','=','kt.id')
                     ->join('tb_general as jn', 'pd.jenis','=','jn.id')
-                    ->join('tb_general as st', 'pd.satuan','=','st.id')
+                    ->join('tb_general as st', 'pd.satuan_jual','=','st.id')
                     ->select('pd.*','kt.keterangan as kategori','jn.keterangan as jenis','st.keterangan as satuan')
                     // ->select('pd.*','cb.keterangan as cabang','kt.keterangan as kategori','jn.keterangan as jenis','st.keterangan as satuan')
                     ->whereIn('pd.jenis',[8,22])
@@ -44,21 +44,24 @@ class ProdukController extends Controller
         $path = $path_[0]->content;
 
         $filter = $request->json()->all();
+        // return $filter;
+        
         foreach ($filter as $key => $value) {
             $filter_['pd.'.$key] = DB::table('tb_general')->where('keterangan',$value)->value('id');
         }
+        // return $filter_;
         
         $data = DB::table('tb_produk as pd')
-                    ->join('tb_general as cb', 'pd.cabang','=','cb.id')
+                    // ->join('tb_general as cb', 'pd.cabang','=','cb.id')
                     ->join('tb_general as kt', 'pd.kategori','=','kt.id')
                     ->join('tb_general as jn', 'pd.jenis','=','jn.id')
-                    ->join('tb_general as st', 'pd.satuan','=','st.id')
-                    ->select('pd.*','cb.keterangan as cabang','kt.keterangan as kategori','jn.keterangan as jenis','st.keterangan as satuan')
+                    ->join('tb_general as st', 'pd.satuan_jual','=','st.id')
+                    // ->select('pd.*','cb.keterangan as cabang','kt.keterangan as kategori','jn.keterangan as jenis','st.keterangan as satuan')
+                    ->select('pd.*','kt.keterangan as kategori','jn.keterangan as jenis','st.keterangan as satuan')
                     ->where($filter_)
                     ->whereNull('pd.deleted_at')
                     ->get();
         
-
         $count = count($data);
         for ($i=0; $i < $count; $i++) { 
             if($data[$i]->gambar == null)

@@ -12,82 +12,97 @@ class CustomerAddressController extends Controller
 {
     public function all()
     {
-        // $data = CustomerAddress::all();
         $data = CustomerAddress::All();
-        return $data;
+        return response()->json(['error' => false, 'msg' => 'Daftar Alamat Pelanggan', 'data' => $data], 200);
     }
-    public function show($id)
-    {   
-        $arr = array ();
-        $data = CustomerAddress::where('customer_id', $id)->get();
-        
-        $i = 0;
-        foreach ($data as $key => $value) {
-            array_push($arr, array(
-                $key    => $value,
-            ));
-            $i++;
+
+    public function show($idPelanggan)
+    {
+        $data = CustomerAddress::where('id_customer', $idPelanggan)->orderBy('utama', 'desc')->get();
+        if ($data) {
+            return response()->json(['error' => false, 'msg' => 'Alamat Pelanggan #' . $idPelanggan, 'data' => $data], 200);
         }
-        return $arr;
+        return response()->json(['error' => false, 'msg' => 'Data tidak ditemukan', 'data' => []], 200);
     }
+
     public function store(Request $request)
     {
-        $data = CustomerAddress::FirstOrCreate([
-            "customer_id"      => $request->json()->get('customer_id'),
-            "city"             => $request->json()->get('city'),
-            "district"         => $request->json()->get('district'),
-            "created_user"     => null,
-            "updated_user"     => null,
-            "deleted_user"     => null, 
-        ] );
-        $status = ($data) ? true : false;
-        $msg = array(
-            'status'    => $status,
-            'message'   => ($status) ? 'Success' : 'Failed'
-        );
-        return $msg;
+        $insert = CustomerAddress::FirstOrCreate([
+            "id_customer"    => $request->json()->get('id_customer'),
+            "keterangan"     => $request->json()->get('keterangan'),
+            "kode_provinsi"  => $request->json()->get('kode_provinsi'),
+            "kode_kota"      => $request->json()->get('kode_kota'),
+            "kode_kecamatan" => $request->json()->get('kode_kecamatan'),
+            "kodepos"        => $request->json()->get('kodepos'),
+            "rt"             => $request->json()->get('rt'),
+            "rw"             => $request->json()->get('rw'),
+            "alamat"         => $request->json()->get('alamat'),
+        ]);
+
+        if ($insert) {
+            return response()->json(['error' => false, 'msg' => 'Alamat Berhasil Ditambahkan', 'data' => null], 200);
+        }
+        return response()->json(['error' => true, 'msg' => 'Something Gone Wrong', 'data' => null], 500);
     }
+
     public function batch(Request $request)
     {
         $data = $request->json()->all();
         $exec = CustomerAddress::insert($data);
-        
+
         $status = ($exec) ? true : false;
 
         $msg = array(
-            'status'    => $status,
-            'message'   => ($status) ? 'Success' : 'Failed'
+            'status'  => $status,
+            'message' => ($status) ? 'Success' : 'Failed'
         );
         return $msg;
     }
-    public function update(Request $request, Response $response, $id)
+
+    public function update(Request $request, $id)
     {
-       $data = CustomerAddress::FindOrFail($id)->update([
-        "customer_id"      => $request->json()->get('customer_id'),
-        "province"         => $request->json()->get('province'),
-        "city"             => $request->json()->get('city'),
-        "distric"          => $request->json()->get('distric'),
-        "postcode"         => $request->json()->get('postcode'),
-        "created_user"     => null,
-        "updated_user"     => null,
-        "deleted_user"     => null, 
-       ]);        
-       $status = ($data)?true : false;
-        $msg = array(
-            'status' => $status,
-            'message' => ($status) ? 'Succes' : 'Failed'
-        );
-        return $msg;
+        $update = CustomerAddress::FindOrFail($id)->update([
+            "keterangan"     => $request->json()->get('keterangan'),
+            "kode_provinsi"  => $request->json()->get('kode_provinsi'),
+            "kode_kota"      => $request->json()->get('kode_kota'),
+            "kode_kecamatan" => $request->json()->get('kode_kecamatan'),
+            "kodepos"        => $request->json()->get('kodepos'),
+            "rt"             => $request->json()->get('rt'),
+            "rw"             => $request->json()->get('rw'),
+            "alamat"         => $request->json()->get('alamat'),
+        ]);
+
+        if ($update) {
+            return response()->json(['error' => false, 'msg' => 'Alamat Berhasil Diubah', 'data' => null], 200);
+        }
+        return response()->json(['error' => true, 'msg' => 'Something Gone Wrong', 'data' => null], 500);
     }
+
     public function delete($id)
     {
         $data = CustomerAddress::findOrFail($id)->delete();
-        $status = ($data)?true : false;
-        $msg = array(
-            'status' => $status,
-            'message' => ($status) ? 'Succes' : 'Failed'
-        );
-        return $msg;
+        $status = ($data) ? true : false;
 
+        if ($status) {
+            return response()->json(['error' => false, 'msg' => 'Alamat Berhasil Dihapus', 'data' => null], 200);
+        }
+        return response()->json(['error' => true, 'msg' => 'Something Gone Wrong', 'data' => null], 500);
+
+    }
+
+    public function makeDefault($idPelanggan, $idAlamat)
+    {
+
+        CustomerAddress::where('id_customer', $idPelanggan)
+            ->update(['utama' => 0]);
+
+        $default = CustomerAddress::find($idAlamat);
+        $default->utama = 1;
+        $default->save();
+
+        if ($default) {
+            return response()->json(['error' => false, 'msg' => 'Alamat Utama Berhasil Diubah', 'data' => null], 200);
+        }
+        return response()->json(['error' => true, 'msg' => 'Something Gone Wrong', 'data' => null], 500);
     }
 }

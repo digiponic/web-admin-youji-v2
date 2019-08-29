@@ -10,16 +10,16 @@ use App\Customer;
 class CustomerAddress extends Model
 {
     use SoftDeletes;
-    protected $table = 'mst_customer_address';
-    
-    protected $fillable = ['customer_id','type','state','district','postcode','desc','created_user','update_user','deleted_user'];
-    protected $hidden = ['created_user','updated_user','deleted_user','created_at','updated_at','deleted_at'];    
-    
+    protected $table = 'tb_alamat_pelanggan';
+
+    protected $fillable = ['id', 'id_customer', 'keterangan', 'kode_provinsi', 'kode_kota', 'kode_kecamatan', 'kodepos', 'rt', 'rw', 'alamat', 'utama'];
+    protected $hidden = ['created_at', 'updated_at', 'deleted_at'];
+
     public function Customer()
     {
         return $this->belongsTo('App\Customer');
     }
-    
-    
+
+
 }
 
