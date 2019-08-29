@@ -11,7 +11,7 @@
 
 			# START CONFIGURATION DO NOT REMOVE THIS LINE
 			$this->title_field = "id";
-			$this->limit = "20";
+			$this->limit = "50";
 			$this->orderby = "gudang,asc";
 			$this->global_privilege = false;
 			$this->button_table_action = true;
@@ -93,8 +93,8 @@
 	        */
 	        $this->sub_module = array();
 			$this->sub_module[] = ['label'=>'','path'=>'tb_produk_detail','parent_columns'=>'kode,keterangan','foreign_key'=>'kode_produk','button_color'=>'info','button_icon'=>'fa fa-bars','showIf'=>'[jenis] == 22'];
-			$this->sub_module[] = ['label'=>'','title'=>'Kartu Stok Jual','path'=>'tb_produk_stok_jual','parent_columns'=>'gudang_keterangan,kode,keterangan,satuan_jual_keterangan,stok_jual','parent_columns_alias'=>'Gudang,Kode,Keterangan,Satuan,Stok','foreign_key'=>'kode_produk','button_color'=>'warning','button_icon'=>'fa fa-cube'];
-			$this->sub_module[] = ['label'=>'','title'=>'Kartu Stok Bahan','path'=>'tb_produk_stok_bahan','parent_columns'=>'gudang_keterangan,kode,keterangan,satuan_bahan_keterangan,stok_bahan','parent_columns_alias'=>'Gudang,Kode,Keterangan,Satuan,Stok','foreign_key'=>'kode_produk','button_color'=>'danger','button_icon'=>'fa fa-cubes'];
+			$this->sub_module[] = ['title'=>'Kartu Stok Jual','path'=>'tb_produk_stok_jual','parent_columns'=>'gudang_keterangan,kode,keterangan,satuan_jual_keterangan,stok_jual','parent_columns_alias'=>'Gudang,Kode,Keterangan,Satuan,Stok','foreign_key'=>'kode_produk','button_color'=>'warning','button_icon'=>'fa fa-cube'];
+			$this->sub_module[] = ['title'=>'Kartu Stok Bahan','path'=>'tb_produk_stok_bahan','parent_columns'=>'gudang_keterangan,kode,keterangan,satuan_bahan_keterangan,stok_bahan','parent_columns_alias'=>'Gudang,Kode,Keterangan,Satuan,Stok','foreign_key'=>'kode_produk','button_color'=>'danger','button_icon'=>'fa fa-cubes'];
 
 	        /*
 	        | ----------------------------------------------------------------------
@@ -158,7 +158,8 @@
 	        | @color = Default is none. You can use bootstrap success,info,warning,danger,primary.
 	        |
 	        */
-	        $this->table_row_color = array();
+			$this->table_row_color = array();
+			$this->table_row_color[] = ['condition'=>"[stok_jual] == 0","color"=>"danger"];
 
 
 	        /*
@@ -168,7 +169,10 @@
 	        | @label, @count, @icon, @color
 	        |
 	        */
-	        $this->index_statistic = array();
+			$this->index_statistic = array();
+			$this->index_statistic[] = ['label'=>'Total Produk','count'=>DB::table('tb_produk')->whereNull('deleted_at')->count(),'icon'=>'fa fa-file','color'=>'primary'];
+			$this->index_statistic[] = ['label'=>'Stok Jual Menipis','count'=>DB::table('tb_produk')->where('stok_jual','<=',5)->whereNull('deleted_at')->count(),'icon'=>'fa fa-cube','color'=>'warning'];
+			$this->index_statistic[] = ['label'=>'Stok Jual Kosong','count'=>DB::table('tb_produk')->where('stok_jual',0)->whereNull('deleted_at')->count(),'icon'=>'fa fa-cube','color'=>'danger'];
 
 
 

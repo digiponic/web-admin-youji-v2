@@ -41,7 +41,7 @@ $(document).ready(function(){
 
         var jumlah = $('#jumlah').val();
 
-        var jumlah_bahan = (jumlah * packVal);
+        var jumlah_bahan = (Math.abs(jumlah) * packVal);
         sisa_bahan = stok_bahan - jumlah_bahan; 
 
         $('#sisa_bahan').val(sisa_bahan);

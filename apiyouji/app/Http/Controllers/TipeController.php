@@ -41,4 +41,13 @@ class TipeController extends Controller
         
         return $data;
     }
+
+    public function sub($id)
+    {
+        $data = DB::table('tb_general')
+                ->where('kode_tipe', $id)
+                ->whereNull('deleted_at')
+                ->get();
+        return $data;
+    }
 }

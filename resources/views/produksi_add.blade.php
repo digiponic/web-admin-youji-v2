@@ -42,7 +42,7 @@
                   Jumlah Produksi
                </label>
                <div class="col-sm-2">                  
-                  <input class="form-control" type="number" id="jumlah" name="jumlah" value="0">
+                  <input class="form-control" type="number" id="jumlah" name="jumlah" value="0" onkeyup="this.value = (this.value[0] === '-') ? ('-' + this.value.replace(/[^0-9]/g, '')) : (this.value.replace(/[^0-9]/g, ''));" pattern="^-?\d+">
                </div>
                <label class="control-label satuan_jual">
                      @ 

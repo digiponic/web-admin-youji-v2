@@ -46,6 +46,7 @@
 			$this->form[] = ['label'=>'Tipe','name'=>'kode_tipe','type'=>'hidden',];
 			$this->form[] = ['label'=>'Keterangan','name'=>'keterangan','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
 			$this->form[] = ['label'=>'Gambar','name'=>'gambar','type'=>'upload','validation'=>'image','width'=>'col-sm-10'];
+			// $this->form[] = ['label'=>'Tampilkan di App','name'=>'show_mobile','type'=>'radio','width'=>'col-sm-10','dataenum'=>'0|Tidak;1|Ya','value'=>0];
 			# END FORM DO NOT REMOVE THIS LINE
 
 			# OLD START FORM

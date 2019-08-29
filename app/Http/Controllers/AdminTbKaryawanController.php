@@ -144,8 +144,7 @@
 	        | @icon  = Icon from Awesome.
 	        |
 	        */
-	        $this->index_button = array();
-
+	        $this->index_button = array();			
 
 
 	        /*

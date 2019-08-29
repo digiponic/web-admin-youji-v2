@@ -1,7 +1,7 @@
 <?php namespace App\Http\Controllers;
 
 	use Session;
-	use Request;
+	use Illuminate\Http\Request;
 	use DB;
 	use CRUDBooster;
 
@@ -138,12 +138,13 @@
 			*/
 			$this->addaction = array();
 			// if(CRUDBooster::myPrivilegeId() != 4){
-			$this->addaction[] = ['title'=>'Proses Pesanan','icon'=>'fa fa-refresh','color'=>'info','url'=>CRUDBooster::mainpath('set-proses').'/[id]','showIf'=>'[status] == 25'];
-			$this->addaction[] = ['title'=>'Kirim Pesanan','icon'=>'fa fa-truck','color'=>'danger','url'=>CRUDBooster::mainpath('set-kirim').'/[id]','showIf'=>'[status] == 26'];
-			$this->addaction[] = ['title'=>'Pesanan Lunas','icon'=>'fa fa-check','color'=>'success','url'=>CRUDBooster::mainpath('set-terima').'/[id]','showIf'=>'[status] == 27'];
+			$this->addaction[] = ['title'=>'TOLAK','icon'=>'fa fa-hand-paper-o','color'=>'danger','url'=>CRUDBooster::mainpath('set-tolak').'/[id]','showIf'=>'[status] == 25','confirmation' => true,'confirmation_type'=>'input','confirmation_title'=>'Alasan','confirmation_text'=>'Berikan alasan penolakan pesanan ini','confirmation_confirmButtonText'=>'Kirim','confirmation_cancelButtonText'=>'Batal'];
+			$this->addaction[] = ['title'=>'PROSES','icon'=>'fa fa-refresh','color'=>'info','url'=>CRUDBooster::mainpath('set-proses').'/[id]','showIf'=>'[status] == 25'];
+			$this->addaction[] = ['title'=>'KIRIM','icon'=>'fa fa-truck','color'=>'danger','url'=>CRUDBooster::mainpath('set-kirim').'/[id]','showIf'=>'[status] == 26 AND [id_kurir] != NULL'];
+			$this->addaction[] = ['title'=>'LUNAS','icon'=>'fa fa-check','color'=>'success','url'=>CRUDBooster::mainpath('set-terima').'/[id]','showIf'=>'[status] == 27'];
 			// $this->addaction[] = ['title'=>'Pesanan Lunas','icon'=>'fa fa-check','color'=>'success','url'=>CRUDBooster::mainpath('set-terima').'/[id]','showIf'=>'[status] == 28 || [status] == 39'];
-			$this->addaction[] = ['title'=>'Pesanan Belum Lunas','icon'=>'fa fa-money','color'=>'danger','url'=>CRUDBooster::mainpath('set-belum-lunas').'/[id]','showIf'=>'[status] == 27'];
-			$this->addaction[] = ['title'=>'Cetak Nota Pesanan','icon'=>'fa fa-print','color'=>'warning','url'=>CRUDBooster::mainpath('set-print').'/[id]','showIf'=>'[status] != 25'];
+			$this->addaction[] = ['title'=>'BELUM LUNAS','icon'=>'fa fa-money','color'=>'danger','url'=>CRUDBooster::mainpath('set-belum-lunas').'/[id]','showIf'=>'[status] == 27'];
+			$this->addaction[] = ['title'=>'CETAK NOTA','icon'=>'fa fa-print','color'=>'warning','url'=>CRUDBooster::mainpath('set-print').'/[id]','showIf'=>'[status] != 25'];
 			// }
 
 
@@ -164,6 +165,7 @@
 				$slug = str_slug($str,'_');
 				$this->button_selected[] = ['label'=>$str,'icon'=>'fa fa-check','name'=>$slug];
 			}		
+			$this->button_selected[] = ['label'=>'KIRIM','icon'=>'fa fa-truck','name'=>'set_kirim'];
 
 	        /*
 	        | ----------------------------------------------------------------------
@@ -211,10 +213,10 @@
 	        $this->index_statistic = array();
 			// $this->index_statistic[] = ['label'=>'Penjualan Web','count' => DB::table('tb_penjualan')->where('platform','web')->count(),'icon'=>'fa fa-chrome','color'=>'primary'];
 			// $this->index_statistic[] = ['label'=>'Penjualan Mobile','count' => DB::table('tb_penjualan')->where('platform','mobile')->count(),'icon'=>'fa fa-mobile','color'=>'success'];
-			$this->index_statistic[] = ['label'=>'Pesanan belum diproses','count' => DB::table('tb_penjualan')->where('status',25)->count(),'icon'=>'fa fa-refresh','color'=>'primary'];
-			$this->index_statistic[] = ['label'=>'Pesanan belum dikirim','count' => DB::table('tb_penjualan')->where('status',26)->count(),'icon'=>'fa fa-truck','color'=>'info'];
-			$this->index_statistic[] = ['label'=>'Pesanan belum dibayar','count' => DB::table('tb_penjualan')->where('status',39)->count(),'icon'=>'fa fa-money','color'=>'danger'];
-			$this->index_statistic[] = ['label'=>'Pesanan sudah dibayar','count' => DB::table('tb_penjualan')->where('status',28)->count(),'icon'=>'fa fa-check','color'=>'success'];
+			$this->index_statistic[] = ['label'=>'PESANAN MASUK','count' => DB::table('tb_penjualan')->where('status',25)->count(),'icon'=>'fa fa-refresh','color'=>'primary'];
+			$this->index_statistic[] = ['label'=>'PESANAN SIAP DIKIRIM','count' => DB::table('tb_penjualan')->where('status',26)->count(),'icon'=>'fa fa-truck','color'=>'info'];
+			$this->index_statistic[] = ['label'=>'PESANAN BELUM LUNAS','count' => DB::table('tb_penjualan')->where('status',39)->count(),'icon'=>'fa fa-money','color'=>'danger'];
+			$this->index_statistic[] = ['label'=>'PESANAN SUDAH LUNAS','count' => DB::table('tb_penjualan')->where('status',28)->count(),'icon'=>'fa fa-check','color'=>'success'];
 
 
 	        /*
@@ -431,6 +433,10 @@
 					DB::table('tb_penjualan')->whereIn('id',$id_selected)->update(['id_kurir'=>$k->id]);
 				}
 			}
+
+			if($button_name == 'set_kirim'){
+				DB::table('tb_penjualan')->whereIn('id',$id_selected)->update(['status'=>27]);
+			}
 	    }
 
 
@@ -499,7 +505,8 @@
 					'kode_produk'		=> $produk->kode,
 					'nama_produk'		=> $produk->keterangan,
 					'satuan'			=> $produk->satuan,
-					'tanggal_pengiriman'=> $penjualan->tanggal
+					'tanggal_pengiriman'=> $penjualan->tanggal,
+					'created_at'		=> $penjualan->tanggal
 				);
 				$produk_stok = array(
 					'tanggal'		=> $penjualan->tanggal,
@@ -564,6 +571,17 @@
 
 		//By the way, you can still create your own method in here... :)
 		
+		public function getSetTolak($id, Request $request)
+		{			
+			$param = $request->all();
+			DB::table('tb_penjualan')
+					->where('id',$id)
+					->update([
+						'status' => 40, 
+						'keterangan_pembatalan' => $param['msg']
+						]);
+			CRUDBooster::redirect($_SERVER['HTTP_REFERER'],"Pesanan berhasil dibatalkan !","success");
+		}
 		public function getSetProses($id)
 		{
 			DB::table('tb_penjualan')->where('id',$id)->update(['status' => 26]);
