@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
+use DB;
 use App\Customer;
 use App\CustomerAddress;
 
@@ -18,7 +19,15 @@ class CustomerAddressController extends Controller
 
     public function show($idPelanggan)
     {
-        $data = CustomerAddress::where('id_customer', $idPelanggan)->orderBy('utama', 'desc')->get();
+        // $data = CustomerAddress::where('id_customer', $idPelanggan)->orderBy('utama', 'desc')->get();
+        $data = DB::table('tb_alamat_pelanggan as ap')
+                    ->join('tb_provinsi as p','p.id','=','ap.kode_provinsi')
+                    ->join('tb_kota as k','k.id','=','ap.kode_kota')
+                    ->join('tb_kecamatan as kc','kc.id','=','ap.kode_kecamatan')
+                    ->where('ap.id_customer', $idPelanggan)
+                    ->whereNull('ap.deleted_at')
+                    ->select('ap.*','p.keterangan as provinsi','k.keterangan as kota','kc.keterangan as kecamatan')
+                    ->get();
         if ($data) {
             return response()->json(['error' => false, 'msg' => 'Alamat Pelanggan #' . $idPelanggan, 'data' => $data], 200);
         }
