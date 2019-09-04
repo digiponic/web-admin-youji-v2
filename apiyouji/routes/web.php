@@ -29,6 +29,8 @@ $router->group(['prefix' => 'customer'], function () use ($router) {
     $router->post('/batch', 'CustomerController@batch');
     $router->put('/update/{id}', 'CustomerController@update');
     $router->delete('/delete/{id}', 'CustomerController@delete');
+    $router->post('/login', 'CustomerController@login');
+    $router->get('/check/{email}', 'CustomerController@isExist');
 });
 
 //routing customeraddress
@@ -66,6 +68,7 @@ $router->group(['prefix' => 'transaksi'], function () use ($router) {
 $router->group(['prefix' => 'produk'], function () use ($router) {
     $router->get('/', 'ProdukController@data');
     $router->post('/filter', 'ProdukController@filter');
+    $router->get('/detail/{id_produk}/{id_customer}', 'ProdukController@detail');
 });
 
 $router->group(['prefix' => 'favorite'], function () use ($router) {
