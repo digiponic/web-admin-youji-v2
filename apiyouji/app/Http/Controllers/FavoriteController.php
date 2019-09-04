@@ -51,7 +51,7 @@ class FavoriteController extends Controller
 
     public function hapus(Request $param)
     {
-        $hapus = DB::table('tb_favorite_item')->where('id_customer', $param['id_customer'])->where('id_produk', $param['id_produk'])->update(['deleted_at' => date("Y-m-d H:i:s")]);
+        $hapus = DB::table('tb_favorite_item')->where('id_customer', $param['id_customer'])->where('id_produk', $param['id_produk'])->delete();
         if ($hapus) {
             return response()->json(['error' => false, 'msg' => 'Produk Batal Disukai'], 200);
         }
